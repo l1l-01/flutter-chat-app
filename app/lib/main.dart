@@ -23,7 +23,61 @@ class Register extends StatelessWidget {
         backgroundColor: const Color.fromARGB(255, 60, 60, 60),
       ),
       backgroundColor: const Color.fromARGB(255, 39, 39, 39),
-      body: const Center(),
+      body: Center(
+        child: SizedBox(
+          width: 280,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              TextField(
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.all(0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(5),
+                    borderSide: BorderSide(color: Colors.grey, width: 0.5),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(4),
+                    borderSide: BorderSide(
+                      color: Colors.lightGreenAccent,
+                      width: 1.0,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => {},
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.lightGreenAccent,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 12,
+                    ),
+                  ),
+                  child: Text(
+                    'register'.toUpperCase(),
+                    style: TextStyle(
+                      color: Color.fromARGB(255, 39, 39, 39),
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -68,7 +122,7 @@ class _ChatPageState extends State<ChatPage> {
         ],
       ),
       backgroundColor: const Color.fromARGB(255, 39, 39, 39),
-      body: Container(
+      body: SizedBox(
         child: Column(
           children: [
             Container(
@@ -78,7 +132,7 @@ class _ChatPageState extends State<ChatPage> {
               margin: EdgeInsets.all(10),
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(5),
-                color: Colors.green,
+                color: Colors.lightGreen,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,7 +140,7 @@ class _ChatPageState extends State<ChatPage> {
                   Text(
                     "Username",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: const Color.fromARGB(255, 31, 31, 31),
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                     ),
@@ -94,7 +148,9 @@ class _ChatPageState extends State<ChatPage> {
                   SizedBox(height: 8),
                   Text(
                     "This is a message",
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                      color: const Color.fromARGB(255, 31, 31, 31),
+                    ),
                   ),
                 ],
               ),
@@ -103,7 +159,7 @@ class _ChatPageState extends State<ChatPage> {
         ),
       ),
       bottomNavigationBar: BottomAppBar(
-        color: const Color.fromARGB(255, 39, 39, 39),
+        color: const Color.fromARGB(255, 31, 31, 31),
         child: Container(
           padding: const EdgeInsets.all(8),
           child: Row(
@@ -134,7 +190,7 @@ class _ChatPageState extends State<ChatPage> {
               ElevatedButton(
                 onPressed: _send,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightGreenAccent,
+                  backgroundColor: Colors.lightGreen,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
@@ -143,7 +199,10 @@ class _ChatPageState extends State<ChatPage> {
                     vertical: 12,
                   ),
                 ),
-                child: const Icon(Icons.send),
+                child: const Icon(
+                  Icons.send,
+                  color: Color.fromARGB(255, 31, 31, 31),
+                ),
               ),
             ],
           ),
