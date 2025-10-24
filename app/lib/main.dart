@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 void main() => runApp(const MyApp());
 
@@ -7,12 +10,38 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: 'Public Chat', home: const ChatPage());
+    return MaterialApp(title: 'Public Chat', home: const Register());
   }
 }
 
-class Register extends StatelessWidget {
+class Register extends StatefulWidget {
   const Register({super.key});
+
+  @override
+  _RegisterState createState() => _RegisterState();
+}
+
+class _RegisterState extends State<Register> {
+  final TextEditingController _controller = TextEditingController();
+
+  Future<void> _registerUser() async {
+    final String username = _controller.text;
+    try {
+      final response = await http.post(
+        // For a real device (or an emulator that shares the network) use your computer's LAN IP (192.168.x.x).
+        Uri.parse('http://your_ip:3000/api/register'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'username': username}),
+      );
+      if (response.statusCode == 201) {
+        print('API call successful');
+      } else {
+        print('API call failed: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,10 +57,10 @@ class Register extends StatelessWidget {
           width: 280,
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextField(
+                style: TextStyle(color: Colors.white),
+                controller: _controller,
                 decoration: InputDecoration(
                   contentPadding: EdgeInsets.all(0),
                   border: OutlineInputBorder(
@@ -50,11 +79,11 @@ class Register extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () => {},
+                  onPressed: _registerUser,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.lightGreenAccent,
                     shape: RoundedRectangleBorder(
@@ -65,8 +94,8 @@ class Register extends StatelessWidget {
                       vertical: 12,
                     ),
                   ),
-                  child: Text(
-                    'register'.toUpperCase(),
+                  child: const Text(
+                    'REGISTER',
                     style: TextStyle(
                       color: Color.fromARGB(255, 39, 39, 39),
                       fontSize: 16,
