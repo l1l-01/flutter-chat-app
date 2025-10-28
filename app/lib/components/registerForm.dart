@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import '../globals.dart' as globals;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'ChatPage.dart';
 import 'package:app/models/user.dart';
 
 class Register extends StatefulWidget {
@@ -31,6 +32,12 @@ class _RegisterState extends State<Register> {
         final userJson = data['user'];
         globals.currentUser = User.fromJson(userJson);
         print(globals.currentUser?.id);
+        // Check that the widget is still mounted before using context
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const ChatPage()),
+        );
       } else {
         print('API call failed: ${response.statusCode}');
       }
