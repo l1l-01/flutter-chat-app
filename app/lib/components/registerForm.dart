@@ -31,7 +31,6 @@ class _RegisterState extends State<Register> {
         final data = jsonDecode(response.body);
         final userJson = data['user'];
         globals.currentUser = User.fromJson(userJson);
-        print(globals.currentUser?.id);
         // Check that the widget is still mounted before using context
         if (!mounted) return;
         Navigator.pushReplacement(

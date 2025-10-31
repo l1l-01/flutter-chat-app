@@ -1,4 +1,10 @@
+import 'package:app/components/registerForm.dart';
 import 'package:flutter/material.dart';
+import '../globals.dart' as globals;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'registerForm.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -22,6 +28,31 @@ class _ChatPageState extends State<ChatPage> {
     super.dispose();
   }
 
+  Future<void> _deregister() async {
+    try {
+      final apiBaseUrl = dotenv.env['API_BASE_URL'];
+      final userId = globals.currentUser?.id;
+
+      final response = await http.delete(
+        Uri.parse('$apiBaseUrl:3000/api/deregister/$userId'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        globals.currentUser = null;
+        if (!mounted) return;
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const Register()),
+        );
+      } else {
+        print('Failed to deregister: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +64,7 @@ class _ChatPageState extends State<ChatPage> {
         backgroundColor: const Color.fromARGB(255, 60, 60, 60),
         actions: [
           IconButton(
-            onPressed: () => {},
+            onPressed: _deregister,
             icon: const Icon(Icons.logout, color: Colors.redAccent),
           ),
         ],
