@@ -1,10 +1,9 @@
-import 'package:app/components/registerForm.dart';
+import 'registerForm.dart';
 import 'package:flutter/material.dart';
 import '../globals.dart' as globals;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'registerForm.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -14,12 +13,49 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final TextEditingController _controller = TextEditingController();
+  bool _isSending = false;
 
-  void _send() {
-    final text = _controller.text.trim();
-    if (text.isEmpty) return;
-    print('send: $text');
-    _controller.clear();
+  Future<void> _send() async {
+    if (_isSending) {
+      print("We're still sending your previous message");
+      return;
+    }
+    final String message = _controller.text.trim();
+    final num? id = globals.currentUser?.id;
+    if (message.isEmpty) {
+      print("Message is empty");
+      return;
+    }
+    if (id == null || id is! num) {
+      print("Id is not a number");
+      return;
+    }
+    final apiBaseUrl = dotenv.env['API_BASE_URL'];
+    if (apiBaseUrl == null) {
+      print('Missing API_BASE_URL');
+      return;
+    }
+    setState(() {
+      _isSending = true;
+    });
+    try {
+      final response = await http.post(
+        Uri.parse('$apiBaseUrl:3000/api/send-msg/$id'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'content': message}),
+      );
+
+      if (response.statusCode == 201) {
+        print("Your message was sent successfully");
+      } else {
+        print("Unexpected Error");
+      }
+    } catch (e) {
+      print('Error: $e');
+    } finally {
+      setState(() => _isSending = false);
+      _controller.clear();
+    }
   }
 
   @override
@@ -55,10 +91,11 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   Widget build(BuildContext context) {
+    final username = globals.currentUser?.username ?? "";
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          'Public Chat',
+        title: Text(
+          username,
           style: TextStyle(color: Colors.white, fontSize: 18),
         ),
         backgroundColor: const Color.fromARGB(255, 60, 60, 60),
@@ -136,7 +173,7 @@ class _ChatPageState extends State<ChatPage> {
               ),
               const SizedBox(width: 8),
               ElevatedButton(
-                onPressed: _send,
+                onPressed: _isSending ? null : _send,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.lightGreen,
                   shape: RoundedRectangleBorder(

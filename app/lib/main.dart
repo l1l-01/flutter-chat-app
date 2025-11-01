@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'components/registerForm.dart';
-import 'components/chatPage.dart';
 
 Future<void> main() async {
   // Ensure Flutter engine is initialized before loading .env

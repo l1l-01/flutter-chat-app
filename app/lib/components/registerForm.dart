@@ -19,7 +19,7 @@ class _RegisterState extends State<Register> {
 
   Future<void> _registerUser() async {
     final apiBaseUrl = dotenv.env['API_BASE_URL'];
-    final String username = _controller.text;
+    final String username = _controller.text.trim();
     try {
       final response = await http.post(
         // For a real device (or an emulator that shares the network) use your computer's LAN IP (192.168.x.x).
