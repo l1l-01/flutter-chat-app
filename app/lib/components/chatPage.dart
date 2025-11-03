@@ -13,7 +13,50 @@ class ChatPage extends StatefulWidget {
 
 class _ChatPageState extends State<ChatPage> {
   final TextEditingController _controller = TextEditingController();
+  List<Map<String, dynamic>> _msgs = [];
   bool _isSending = false;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchMsgs();
+  }
+
+  Future<void> _fetchMsgs() async {
+    final apiBaseUrl = dotenv.env['API_BASE_URL'];
+    if (apiBaseUrl == null) {
+      print('Missing API_BASE_URL');
+      return;
+    }
+    try {
+      final response = await http.get(
+        Uri.parse('$apiBaseUrl:3000/api/msgs/last-20'),
+        headers: {'Content-Type': 'application/json'},
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body);
+        final List<dynamic> data = body['data'];
+        setState(() {
+          _msgs = data
+              .map(
+                (msg) => {
+                  'id': msg['id'],
+                  'content': msg['content'],
+                  'username': msg['user']['username'],
+                },
+              )
+              .toList();
+          _isLoading = false;
+        });
+      } else {
+        print('Failed to load messages: ${response.statusCode}');
+      }
+    } catch (e) {
+      print("Error: $e");
+    }
+  }
 
   Future<void> _send() async {
     if (_isSending) {
@@ -26,7 +69,7 @@ class _ChatPageState extends State<ChatPage> {
       print("Message is empty");
       return;
     }
-    if (id == null || id is! num) {
+    if (id == null) {
       print("Id is not a number");
       return;
     }
@@ -47,6 +90,7 @@ class _ChatPageState extends State<ChatPage> {
 
       if (response.statusCode == 201) {
         print("Your message was sent successfully");
+        await _fetchMsgs();
       } else {
         print("Unexpected Error");
       }
@@ -107,42 +151,52 @@ class _ChatPageState extends State<ChatPage> {
         ],
       ),
       backgroundColor: const Color.fromARGB(255, 39, 39, 39),
-      body: SizedBox(
-        child: Column(
-          children: [
-            Container(
-              alignment: Alignment.topLeft,
-              width: 250,
-              padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-              margin: EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(5),
-                color: Colors.lightGreen,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Username",
-                    style: TextStyle(
-                      color: const Color.fromARGB(255, 31, 31, 31),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              padding: const EdgeInsets.all(10),
+              itemCount: _msgs.length,
+              itemBuilder: (context, index) {
+                final msg = _msgs[index];
+                final isCurrentUser =
+                    msg['username'] == globals.currentUser?.username;
+                return Align(
+                  alignment: isCurrentUser
+                      ? Alignment.centerRight
+                      : Alignment.centerLeft,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: 4),
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: isCurrentUser
+                          ? Colors.lightGreen
+                          : Colors.grey.shade700,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          msg['username'],
+                          style: const TextStyle(
+                            color: Color.fromARGB(255, 31, 31, 31),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          msg['content'],
+                          style: const TextStyle(
+                            color: Color.fromARGB(255, 31, 31, 31),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  SizedBox(height: 8),
-                  Text(
-                    "This is a message",
-                    style: TextStyle(
-                      color: const Color.fromARGB(255, 31, 31, 31),
-                    ),
-                  ),
-                ],
-              ),
+                );
+              },
             ),
-          ],
-        ),
-      ),
       bottomNavigationBar: BottomAppBar(
         color: const Color.fromARGB(255, 31, 31, 31),
         child: Container(
@@ -175,7 +229,7 @@ class _ChatPageState extends State<ChatPage> {
               ElevatedButton(
                 onPressed: _isSending ? null : _send,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightGreen,
+                  backgroundColor: _isSending ? Colors.grey : Colors.lightGreen,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(18),
                   ),
