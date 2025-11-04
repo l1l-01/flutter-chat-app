@@ -1,6 +1,7 @@
 # Public Chat Mobile Application
 
 ![Project Screenshot](./Screenshot.png)
+![Project Screenshot](./Screenshot1.png)
 
 A real-time public chat mobile application built with Flutter , and Express, TypeORM, and PostgreSQL for the backend API.
 
@@ -12,9 +13,9 @@ A real-time public chat mobile application built with Flutter , and Express, Typ
 
 ## Tech Stack
 
-Backend: ExpressJs, TypeScript, TypeORM, class-transformer, Cors, dotenv, pg, reflect-metadata, socket.io, typeorm, zod, Yarn
-Database: PostgreSQL
-Mobile: Flutter
+- Backend: ExpressJs, TypeScript, TypeORM, class-transformer, Cors, dotenv, pg, reflect-metadata, socket.io, typeorm, zod, Yarn
+- Database: PostgreSQL
+- Mobile: Flutter
 
 ## Prerequisites
 
@@ -28,7 +29,7 @@ I. Clone the repository:
 
 ```bash
 git clone https://github.com/l1l-01/flutter-chat-app.git
-cd public-chat
+cd flutter-chat-app
 ```
 
 - Backend
