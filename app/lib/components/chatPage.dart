@@ -4,6 +4,7 @@ import '../globals.dart' as globals;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -17,10 +18,38 @@ class _ChatPageState extends State<ChatPage> {
   bool _isSending = false;
   bool _isLoading = true;
 
+  late IO.Socket socket;
+
   @override
   void initState() {
     super.initState();
     _fetchMsgs();
+    _connectSocket();
+  }
+
+  void _connectSocket() {
+    final apiBaseUrl = dotenv.env['API_BASE_URL'];
+
+    socket = IO.io(
+      '$apiBaseUrl:3000',
+      IO.OptionBuilder().setTransports(['websocket']).build(),
+    );
+
+    socket.onConnect((_) => print('Connected to socket server'));
+    socket.onDisconnect((_) => print('Disconnected from socket'));
+
+    socket.on('newMsg', (data) {
+      print('New message received: $data');
+      if (mounted) {
+        setState(() {
+          _msgs.add({
+            'id': data['id'],
+            'content': data['content'],
+            'username': data['user']['username'],
+          });
+        });
+      }
+    });
   }
 
   Future<void> _fetchMsgs() async {
@@ -90,7 +119,6 @@ class _ChatPageState extends State<ChatPage> {
 
       if (response.statusCode == 201) {
         print("Your message was sent successfully");
-        await _fetchMsgs();
       } else {
         print("Unexpected Error");
       }
@@ -170,7 +198,7 @@ class _ChatPageState extends State<ChatPage> {
                     decoration: BoxDecoration(
                       color: isCurrentUser
                           ? Colors.lightGreen
-                          : Colors.grey.shade700,
+                          : const Color.fromARGB(255, 218, 218, 218),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Column(
