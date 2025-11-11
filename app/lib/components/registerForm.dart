@@ -51,7 +51,7 @@ class _RegisterState extends State<Register> {
       appBar: AppBar(
         title: const Text('Register'),
         titleTextStyle: const TextStyle(color: Colors.white, fontSize: 18),
-        backgroundColor: const Color.fromARGB(255, 60, 60, 60),
+        backgroundColor: const Color(0xFF151515),
       ),
       backgroundColor: const Color.fromARGB(255, 39, 39, 39),
       body: Container(
@@ -68,11 +68,31 @@ class _RegisterState extends State<Register> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                Text(
+                  "Welcome to Public Chat",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                Text(
+                  "Please enter your chosen username",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 50),
                 TextField(
                   style: TextStyle(color: Colors.white),
                   controller: _controller,
                   decoration: InputDecoration(
-                    contentPadding: EdgeInsets.all(0),
+                    hintText: "Username",
+                    contentPadding: EdgeInsets.all(2),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(5),
                     ),
